@@ -1,4 +1,4 @@
-
+from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -123,3 +123,10 @@ CACHES = {
 }
 
 CELERY_BROKER_URL = "redis://127.0.0.1:6379/1"
+
+CELERY_BEAT_SCHEDULE = {
+    "say-hello-every-10s": {
+        "task": "main.tasks.say_hello",
+        "schedule": timedelta(seconds=10),
+    },
+}
