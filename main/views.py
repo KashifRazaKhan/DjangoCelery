@@ -2,7 +2,9 @@ from django.http import JsonResponse
 from .tasks import ( add,
                      fail,
                      long_running_task,
-                     workflow_chain )
+                     workflow_chain,
+                     workflow_chord
+                     )
 from celery.result import AsyncResult
 
 # Create your views here.
@@ -43,4 +45,9 @@ def task_status(request, task_id):
 
 def run_chain_view(request):
     result = workflow_chain(10)
+    return JsonResponse({"task_id": result.id})
+
+def run_chord_view(request):
+    nums = [1, 2, 3, 4, 5]
+    result = workflow_chord(nums)
     return JsonResponse({"task_id": result.id})

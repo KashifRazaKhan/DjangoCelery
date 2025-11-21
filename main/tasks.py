@@ -1,4 +1,4 @@
-from celery import shared_task, chain
+from celery import shared_task, chain, chord
 import time
 
 @shared_task
@@ -55,3 +55,16 @@ def workflow_chain(start_num):
         task_subtract.s()
     )
     return job.apply_async()
+
+@shared_task
+def process_item(x):
+    return x * 2
+
+@shared_task
+def combine(results):
+    return sum(results)
+
+def workflow_chord(numbers):
+    header = [process_item.s(n) for n in numbers]
+    callback = combine.s()
+    return chord(header)(callback)
