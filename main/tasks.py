@@ -9,12 +9,16 @@ def add(x, y):
 def say_hello():
     print("Hello, Kashif!")
 
+# The task that is redone for "n" times if it fails, after a specific interval
+
 @shared_task(bind=True, default_retry_delay=5, max_retries=3)
 def fail(self):
     try:
         raise Exception("Intentional Exception.")
     except Exception as e:
         self.retry(exc=e)
+
+# The long running task
 
 @shared_task(bind=True)
 def long_running_task(self, total=10):
@@ -36,6 +40,8 @@ def long_running_task(self, total=10):
         "total": total
     }
 
+# The tasks that are done in chain workflow
+
 @shared_task
 def task_add(x):
     return x + 10
@@ -55,6 +61,8 @@ def workflow_chain(start_num):
         task_subtract.s()
     )
     return job.apply_async()
+
+# The tasks that are done in chord workflow
 
 @shared_task
 def process_item(x):
