@@ -1,4 +1,4 @@
-from celery import shared_task
+from celery import shared_task, chain
 import time
 
 @shared_task
@@ -35,3 +35,23 @@ def long_running_task(self, total=10):
         "status": "completed",
         "total": total
     }
+
+@shared_task
+def task_add(x):
+    return x + 10
+
+@shared_task
+def task_double(y):
+    return y * 2
+
+@shared_task
+def task_subtract(z):
+    return z - 3
+
+def workflow_chain(start_num):
+    job = chain(
+        task_add.s(start_num),
+        task_double.s(),
+        task_subtract.s()
+    )
+    return job.apply_async()
